@@ -45,6 +45,7 @@ function calculateTotalMortgage(percent, contribution, amount, date) {
   } else {
     totalAmount = 0
   }
-
+  
+  console.log(totalAmount);
   return totalAmount;
 }
