@@ -2,16 +2,9 @@
 function getArrayParams(arr) {
   let min, max, sum, avg;
 
-  max = -Infinity;
-  min = Infinity;
-  sum = 0;
-
-  for(let item of arr) {
-    max = item > max ? item : max;
-    min = item < min ? item : min;
-    sum += item;
-  }
-  
+  max = Math.max(...arr);
+  min = Math.min(...arr);
+  sum = arr.reduce((acc, item) => acc + item, 0);
   avg = +(sum / arr.length).toFixed(2);
 
   return { min: min, max: max, avg: avg };
@@ -34,13 +27,5 @@ function makeWork(arrOfArr, func) {
 
 // Задание 3
 function worker2(arr) {
-  let max = arr[0];
-  let min = arr[0];
-
-  for(let item of arr) {
-    max = item > max ? item : max;
-    min = item < min ? item : min;
-  }
-
-  return max - min;
+  return Math.max(...arr) - Math.min(...arr);
 }
