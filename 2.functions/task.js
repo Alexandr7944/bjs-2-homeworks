@@ -47,6 +47,6 @@ function worker2(arr) {
     max = item > max ? item : max;
     min = item < min ? item : min;
   }
-  
+
   return max - min;
 }
