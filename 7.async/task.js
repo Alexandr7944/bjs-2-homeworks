@@ -21,22 +21,23 @@ class AlarmClock{
         this.alarmCollection = this.alarmCollection.filter(i => i.id !== id);
     }
 
-    getCurrentFormattedTime() {
+    getCurrentFormattedTime(addMin = 0) {
         const dateNow = new Date();
         const hour = dateNow.getHours() < 10 ? `0${dateNow.getHours()}` : `${dateNow.getHours()}`;
         const min = dateNow.getMinutes() < 10 ? `0${dateNow.getMinutes()}` : `${dateNow.getMinutes()}`;
-        return hour + ':' + min;
+        return hour + ':' + (+min + addMin);
     };
 
-    checkClock(item) {
-        if(this.alarmCollection[item].time == this.getCurrentFormattedTime()) { 
-            return console.log(this.alarmCollection[item].callback());
+    checkClock(obj) {
+        if(obj.time == this.getCurrentFormattedTime()) { 
+            return console.log(obj.callback());
         }
     }
     
     start() {
         if(!this.timerId) {
-            this.timerId = setInterval(() => this.alarmCollection.find((item, index) => this.checkClock(index)), 1000);
+            this.timerId = setInterval(() => this.alarmCollection.find((item, index, arr) => this.checkClock(item)), 1000);
+            // this.timerId = setInterval(() => this.alarmCollection.find((item, index) => this.checkClock(index)), 1000);
         }
     }
 
@@ -55,7 +56,7 @@ class AlarmClock{
 
     clearAlarms() {
         this.stop();
-        this.alarmCollection = this.alarmCollection.filter(i => i == false);
+        this.alarmCollection = [];
     }
 }
 
@@ -63,21 +64,12 @@ let test;
 testCase();
 function testCase() {
     console.log(test = new AlarmClock);
-    test.addClock(test.getCurrentFormattedTime(), () => {console.log('Пора вставать!')}, 1);
-    test.addClock(new Date().getHours() + ':' + (new Date().getMinutes() + 1), () => {
-        console.log('Давай, пора вставать!');
+    test.addClock(test.getCurrentFormattedTime(), () => console.log('Пора вставать!'), 1);
+    test.addClock(test.getCurrentFormattedTime(1), () => {
+        console.log('Давай, вставай уже!');
         test.removeClock(2);
-        /*После удаления звонка метод find видит прежнюю длину массива и обращается к элементам которых нет, появляется ошибка
-
-            VM9607 task.js:32 Uncaught TypeError: Cannot read properties of undefined (reading 'time')
-            at AlarmClock.checkClock (VM9607 task.js:32:39)
-            at VM9607 task.js:39:94
-            at Array.find (<anonymous>)
-            at VM9607 task.js:39:67
-            
-        при этом когда делаю тоже самое не в callback все работает без замечания*/
     }, 2);
-    test.addClock(new Date().getHours() + ':' + (new Date().getMinutes() + 2), () => {
+    test.addClock(test.getCurrentFormattedTime(2), () => {
         console.log('Иди умываться');
         test.stop();
         test.printAlarms();
