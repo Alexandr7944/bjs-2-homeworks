@@ -3,11 +3,7 @@ function cachingDecoratorNew(func) {
 
   function wrapper(...arr) {
     let hash = arr.join(',');
-    let objectInCache = cache.find((item) => {
-      if(item.hash === hash) {
-        return item;
-      }
-    })
+    let objectInCache = cache.find(item => item.hash === hash);
 
     if(objectInCache) {
       console.log("Из кэша: " + objectInCache.result);
@@ -15,10 +11,7 @@ function cachingDecoratorNew(func) {
     }
 
     let result = func(...arr);
-    cache.unshift({
-      hash: hash,
-      result: result
-    });
+    cache.unshift({hash, result});
 
     if(cache.length > 5){
       cache.pop();
@@ -30,57 +23,28 @@ function cachingDecoratorNew(func) {
   return wrapper
 }
 
-
-
-
 function debounceDecoratorNew(func) {
   let timeoutId = false;
   function wrapper(...args) {
-    let result = func(...args);
+    wrapper.allCount++;
     if(timeoutId == false) {
+      wrapper.count++;
       timeoutId = null;
-      console.log('Результат первичный ' + result);
-      return result
-    } else {
-      if(timeoutId) {
-        clearTimeout(timeoutId);
-      }
-      timeoutId = setTimeout(() => {
-        timeoutId = null;
-        console.log('Результат после таймаута ' + result);
-        return result;
-      }, 2000)
+      console.log('Результат первичный');
+      return func(...args)
     }
-  }
-  return wrapper
-}
 
-function debounceDecorator2(func) {
-  let timeoutId = false;
-  function wrapper(...args) {
-    wrapper.count.allCount++;
-    let result = func(...args);
-    if(timeoutId == false) {
-      timeoutId = null;
-      console.log('Результат первичный ' + result);
-      wrapper.count.resultCount++;
-      return result
-    } else {
-      if(timeoutId) {
-        clearTimeout(timeoutId);
-      }
-      timeoutId = setTimeout(() => {
-        timeoutId = null;
-        console.log('Результат после таймаута ' + result);
-        wrapper.count.resultCount++;
-        return result;
-      }, 2000)
+    if(timeoutId) {
+      clearTimeout(timeoutId);
     }
-  }
-  wrapper.count = {
-    allCount: 0,
-    resultCount: 0,
-  };
 
+    timeoutId = setTimeout(() => {
+      wrapper.count++;
+      console.log('Результат после таймаута');
+      return func(...args);
+    }, 2000)
+  }
+  wrapper.count = 0;
+  wrapper.allCount = 0;
   return wrapper
 }
